@@ -1,4 +1,4 @@
-﻿namespace ABAC.DAL.Models
+﻿namespace ABAC.DAL.Entities
 {
     public class Action
     {
