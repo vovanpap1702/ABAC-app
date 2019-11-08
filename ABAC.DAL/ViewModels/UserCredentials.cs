@@ -1,9 +1,7 @@
-﻿namespace ABAC.DAL.Entities
+﻿namespace ABAC.DAL.ViewModels
 {
     public class UserCredentials
     {
-        public int Id { get; set; }
-
         public string Login { get; set; }
 
         public string Password { get; set; }

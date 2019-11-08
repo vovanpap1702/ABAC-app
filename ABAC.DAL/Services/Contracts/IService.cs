@@ -6,6 +6,8 @@ namespace ABAC.DAL.Services.Contracts
 {
     public interface IService<T>
     {
+        Task<IEnumerable<T>> GetAsync();
+
         Task<T> GetAsync(int id);
 
         Task UpdateAsync(T model);

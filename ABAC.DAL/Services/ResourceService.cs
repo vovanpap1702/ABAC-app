@@ -1,5 +1,5 @@
 ﻿using ABAC.DAL.Entities;
-using ABAC.DAL.Models;
+using ABAC.DAL.ViewModels;
 using ABAC.DAL.Repositories.Contracts;
 using ABAC.DAL.Services.Contracts;
 using System;
@@ -19,10 +19,20 @@ namespace ABAC.DAL.Services
             this.repository = repository;
         }
 
+        public async Task<IEnumerable<ResourceInfo>> GetAsync()
+        {
+            //will be mapped later
+            return (await repository.GetAsync()).Select(r => new ResourceInfo(){ Id = r.Id, Name = r.Name, Value = r.Value });
+        }
+
         public async Task<ResourceInfo> GetAsync(int id)
         {
             var resource = await repository.GetByIdAsync(id);
-
+            if (resource == null)
+            {
+                // throw new NotFoundException
+            }
+            // will be mapped later
             return new ResourceInfo { Id = resource.Id, Name = resource.Name, Value = resource.Value };
         }
 
@@ -42,12 +52,22 @@ namespace ABAC.DAL.Services
 
         public async Task DeleteAsync(int id)
         {
+            var resource = await repository.GetByIdAsync(id);
+            if (resource == null)
+            {
+                //throw new NotFoundException
+            }
+
             await repository.DeleteByIdAsync(id);
         }
 
         public async Task<IEnumerable<Attribute>> GetAttributesAsync(int id)
         {
             var resource = await repository.GetByIdAsync(id);
+            if (resource == null)
+            {
+                //throw new NotFoundException
+            }
 
             return resource.Attributes;
         }
@@ -55,15 +75,25 @@ namespace ABAC.DAL.Services
         public async Task AddAttributesAsync(int id, IEnumerable<Attribute> attributes)
         {
             var resource = await repository.GetByIdAsync(id);
+            if (resource == null)
+            {
+                //throw new NotFoundException
+            }
+
             resource.Attributes = resource.Attributes.Concat(attributes).Distinct(new AttributeEqualityComparer());
             await repository.CreateOrUpdateAsync(resource);
         }
 
         public async Task DeleteAttributeAsync(int id, Attribute attribute)
         {
-            var user = await repository.GetByIdAsync(id);
-            user.Attributes = user.Attributes.Where(a => !new AttributeEqualityComparer().Equals(a, attribute));
-            await repository.CreateOrUpdateAsync(user);
+            var resource = await repository.GetByIdAsync(id);
+            if (resource == null)
+            {
+                //throw new NotFoundException
+            }
+
+            resource.Attributes = resource.Attributes.Where(a => !new AttributeEqualityComparer().Equals(a, attribute));
+            await repository.CreateOrUpdateAsync(resource);
         }
     }
 }

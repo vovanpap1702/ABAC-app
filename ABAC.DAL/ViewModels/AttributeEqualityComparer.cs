@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Attribute = ABAC.DAL.Entities.Attribute;
 
-namespace ABAC.DAL.Models
+namespace ABAC.DAL.ViewModels
 {
-    class AttributeEqualityComparer : IEqualityComparer<Attribute>
+    class AttributeEqualityComparer : IEqualityComparer<Attribute> // draft version
     {
         public bool Equals(Attribute x, Attribute y)
         {

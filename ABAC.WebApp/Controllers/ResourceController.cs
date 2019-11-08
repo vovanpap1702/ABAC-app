@@ -1,7 +1,7 @@
-﻿using ABAC.DAL.Models;
-using ABAC.DAL.Services.Contracts;
+﻿using ABAC.DAL.Services.Contracts;
+using ABAC.DAL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ABAC.WebApp.Controllers
@@ -17,22 +17,28 @@ namespace ABAC.WebApp.Controllers
             this.service = service;
         }
 
+        [HttpGet("")]
+        public async Task<IEnumerable<ResourceInfo>> GetResourcesAsync()
+        {
+            return await service.GetAsync();
+        }
+
         [HttpGet("{id}")]
         public async Task<ResourceInfo> GetResourceAsync(int id)
         {
-            throw new NotImplementedException();
+            return await service.GetAsync(id);
         }
 
         [HttpPost("")]
         public async Task CreateOrUpdateResourceAsync([FromBody] ResourceInfo resource)
         {
-            throw new NotImplementedException();
+            await service.UpdateAsync(resource);
         }
 
         [HttpDelete("{id}")]
         public async Task DeleteResourceAsync(int id)
         {
-            throw new NotImplementedException();
+            await service.DeleteAsync(id);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace ABAC.DAL.Models
+﻿namespace ABAC.DAL.ViewModels
 {
     public class ResourceInfo
     {
