@@ -1,11 +1,9 @@
 ﻿using ABAC.DAL.Repositories.Contracts;
 using ABAC.DAL.Services.Contracts;
 using ABAC.DAL.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Attribute = ABAC.DAL.Entities.Attribute;
 
 namespace ABAC.DAL.Services
 {
@@ -15,10 +13,9 @@ namespace ABAC.DAL.Services
     {
         private readonly IUserRepository repository;
 
-        public UserService(IUserRepository repository, ICredentialsRepository credentialsRepository)
+        public UserService(IUserRepository repository)
         {
             this.repository = repository;
-            this.credentialsRepository = credentialsRepository;
         }
 
         public async Task<IEnumerable<UserInfo>> GetAsync()
