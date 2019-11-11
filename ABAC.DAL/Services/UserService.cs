@@ -1,5 +1,6 @@
 ﻿using ABAC.DAL.Entities;
 using ABAC.DAL.Exceptions;
+using ABAC.DAL.Extensions;
 using ABAC.DAL.Repositories.Contracts;
 using ABAC.DAL.Services.Contracts;
 using ABAC.DAL.ViewModels;
@@ -61,8 +62,9 @@ namespace ABAC.DAL.Services
 
         public async Task CreateAsync(UserInfo user, UserCredentials credentials)
         {
-            await repository.CreateOrUpdateAsync(new User());
-            // add new user using user factory
+            var entity = new User().SetInfo(user).SetCredentials(credentials).SetDefaultAttributes();
+
+            await repository.CreateOrUpdateAsync(entity);
         }
 
         public async Task UpdateAsync(UserInfo model)
@@ -73,7 +75,7 @@ namespace ABAC.DAL.Services
                 throw new NotFoundException();
             }
 
-            user.Name = model.Name;
+            user.SetInfo(model);
             await repository.CreateOrUpdateAsync(user);
         }
 
@@ -101,13 +103,20 @@ namespace ABAC.DAL.Services
 
         public async Task AddAttributesAsync(int id, IEnumerable<Attribute> attributes)
         {
+            if (attributes?.First() == null)
+            {
+                return;
+            }
+
             var user = await repository.GetByIdAsync(id);
             if (user == null)
             {
                 throw new NotFoundException();
             }
 
-            user.Attributes = user.Attributes.Concat(attributes).Distinct(new AttributeEqualityComparer());
+            user.Attributes = user.Attributes.Except(attributes, new AttributeByNameEqualityComparer())
+                .Concat(attributes)
+                .ToList();
             await repository.CreateOrUpdateAsync(user);
         }
 
@@ -119,7 +128,7 @@ namespace ABAC.DAL.Services
                 throw new NotFoundException();
             }
 
-            user.Attributes = user.Attributes.Where(a => !new AttributeEqualityComparer().Equals(a, attribute));
+            user.Attributes = user.Attributes.Except(Enumerable.Repeat(attribute, 1), new AttributeEqualityComparer()).ToList();
             await repository.CreateOrUpdateAsync(user);
         }
     }

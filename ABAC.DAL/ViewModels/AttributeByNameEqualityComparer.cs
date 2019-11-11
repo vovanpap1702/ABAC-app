@@ -4,11 +4,11 @@ using Attribute = ABAC.DAL.Entities.Attribute;
 
 namespace ABAC.DAL.ViewModels
 {
-    class AttributeEqualityComparer : IEqualityComparer<Attribute> 
+    class AttributeByNameEqualityComparer : IEqualityComparer<Attribute>
     {
         public bool Equals(Attribute x, Attribute y)
         {
-            return x?.Name == y?.Name && x?.Value == y?.Value;
+            return x?.Name == y?.Name;
         }
 
         public int GetHashCode(Attribute obj)

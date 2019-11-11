@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace ABAC.WebApp.Controllers
 {
-    using System;
-
     [Route("api/auth")]
     [ApiController]
     public class SessionController : ControllerBase

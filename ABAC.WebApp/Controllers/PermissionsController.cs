@@ -28,7 +28,7 @@ namespace ABAC.WebApp.Controllers
         }
 
         [HttpPost("user/{id}")]
-        public async Task UpdateUserAsync(int id, [FromBody] IEnumerable<Attribute> attributes)
+        public async Task UpdateUserAttributesAsync(int id, [FromBody] IEnumerable<Attribute> attributes)
         {
             await userService.AddAttributesAsync(id, attributes);
         }

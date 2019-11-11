@@ -1,5 +1,6 @@
 ﻿using ABAC.DAL.Entities;
 using ABAC.DAL.Exceptions;
+using ABAC.DAL.Extensions;
 using ABAC.DAL.ViewModels;
 using ABAC.DAL.Repositories.Contracts;
 using ABAC.DAL.Services.Contracts;
@@ -7,7 +8,6 @@ using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Attribute = ABAC.DAL.Entities.Attribute;
 
 namespace ABAC.DAL.Services
@@ -41,14 +41,9 @@ namespace ABAC.DAL.Services
 
         public async Task UpdateAsync(ResourceInfo model)
         {
-            var resource = await repository.GetByIdAsync(model.Id);
-            if (resource == null)
-            {
-                // get new resource from the resource factory
-            }
+            var resource = await repository.GetByIdAsync(model.Id) ?? new Resource().SetDefaultAttributes();
 
-            resource.Name = model.Name;
-            resource.Value = model.Value;
+            resource.SetInfo(model);
             await repository.CreateOrUpdateAsync(resource);
         }
 
