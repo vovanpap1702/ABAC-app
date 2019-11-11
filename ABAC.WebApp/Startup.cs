@@ -1,9 +1,18 @@
+using ABAC.DAL.Entities;
+using ABAC.DAL.Repositories;
+using ABAC.DAL.Repositories.Contracts;
+using ABAC.DAL.Services;
+using ABAC.DAL.Services.Contracts;
+using ABAC.DAL.ViewModels;
+using ABAC.WebApp.Configuration;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace ABAC.WebApp
 {
@@ -26,6 +35,12 @@ namespace ABAC.WebApp
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
+            services.AddTransient<IEntityRepository<Resource>, ResourceRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IService<ResourceInfo>, ResourceService>();
+            services.AddTransient<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

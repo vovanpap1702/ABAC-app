@@ -1,4 +1,5 @@
-﻿using ABAC.DAL.Services.Contracts;
+﻿using ABAC.DAL.Exceptions;
+using ABAC.DAL.Services.Contracts;
 using ABAC.DAL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -23,27 +24,29 @@ namespace ABAC.WebApp.Controllers
         {
             try
             {
-                var expected = await service.GetCredentialsAsync(credentials.Login);
+                await service.GetCredentialsAsync(credentials.Login);
             }
-            catch (/*NotFound*/Exception)
+            catch (NotFoundException)
             {
                 await service.CreateAsync(info, credentials);
                 // create session
+                return;
             }
 
-            // throw new AlreadyExistsException
+            throw new AlreadyExistsException();
         }
 
         [HttpPost("login")]
         public async Task LogIn([FromForm] UserCredentials user)
         {
             var expected = await service.GetCredentialsAsync(user.Login);
-            if (expected != null && expected.Password == user.Password)
+            if (expected.Password == user.Password)
             {
                 // create session
+                return;
             }
 
-            // throw new InvalidCredentialsException
+            throw new InvalidCredentialsException();
         }
 
         [HttpGet("logout")]

@@ -1,11 +1,13 @@
 ﻿using ABAC.DAL.Entities;
+using ABAC.DAL.Exceptions;
 using ABAC.DAL.ViewModels;
 using ABAC.DAL.Repositories.Contracts;
 using ABAC.DAL.Services.Contracts;
-using System;
+using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Attribute = ABAC.DAL.Entities.Attribute;
 
 namespace ABAC.DAL.Services
@@ -13,16 +15,17 @@ namespace ABAC.DAL.Services
     public class ResourceService : IService<ResourceInfo>
     {
         private readonly IEntityRepository<Resource> repository;
+        private readonly IMapper mapper;
 
-        public ResourceService(IEntityRepository<Resource> repository)
+        public ResourceService(IEntityRepository<Resource> repository, IMapper mapper)
         {
             this.repository = repository;
+            this.mapper = mapper;
         }
 
         public async Task<IEnumerable<ResourceInfo>> GetAsync()
         {
-            //will be mapped later
-            return (await repository.GetAsync()).Select(r => new ResourceInfo(){ Id = r.Id, Name = r.Name, Value = r.Value });
+            return (await repository.GetAsync()).Select(r => mapper.Map<ResourceInfo>(r));
         }
 
         public async Task<ResourceInfo> GetAsync(int id)
@@ -30,10 +33,10 @@ namespace ABAC.DAL.Services
             var resource = await repository.GetByIdAsync(id);
             if (resource == null)
             {
-                // throw new NotFoundException
+                throw new NotFoundException();
             }
-            // will be mapped later
-            return new ResourceInfo { Id = resource.Id, Name = resource.Name, Value = resource.Value };
+            
+            return mapper.Map<ResourceInfo>(resource);
         }
 
         public async Task UpdateAsync(ResourceInfo model)
@@ -42,7 +45,6 @@ namespace ABAC.DAL.Services
             if (resource == null)
             {
                 // get new resource from the resource factory
-                throw new NotImplementedException();
             }
 
             resource.Name = model.Name;
@@ -55,7 +57,7 @@ namespace ABAC.DAL.Services
             var resource = await repository.GetByIdAsync(id);
             if (resource == null)
             {
-                //throw new NotFoundException
+                throw new NotFoundException();
             }
 
             await repository.DeleteByIdAsync(id);
@@ -66,7 +68,7 @@ namespace ABAC.DAL.Services
             var resource = await repository.GetByIdAsync(id);
             if (resource == null)
             {
-                //throw new NotFoundException
+                throw new NotFoundException();
             }
 
             return resource.Attributes;
@@ -77,7 +79,7 @@ namespace ABAC.DAL.Services
             var resource = await repository.GetByIdAsync(id);
             if (resource == null)
             {
-                //throw new NotFoundException
+                throw new NotFoundException();
             }
 
             resource.Attributes = resource.Attributes.Concat(attributes).Distinct(new AttributeEqualityComparer());
@@ -89,7 +91,7 @@ namespace ABAC.DAL.Services
             var resource = await repository.GetByIdAsync(id);
             if (resource == null)
             {
-                //throw new NotFoundException
+                throw new NotFoundException();
             }
 
             resource.Attributes = resource.Attributes.Where(a => !new AttributeEqualityComparer().Equals(a, attribute));

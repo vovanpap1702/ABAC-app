@@ -1,27 +1,29 @@
-﻿using ABAC.DAL.Repositories.Contracts;
+﻿using ABAC.DAL.Entities;
+using ABAC.DAL.Exceptions;
+using ABAC.DAL.Repositories.Contracts;
 using ABAC.DAL.Services.Contracts;
 using ABAC.DAL.ViewModels;
+using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ABAC.DAL.Services
 {
-    using ABAC.DAL.Entities;
-
     public class UserService : IUserService
     {
         private readonly IUserRepository repository;
+        private readonly IMapper mapper;
 
-        public UserService(IUserRepository repository)
+        public UserService(IUserRepository repository, IMapper mapper)
         {
             this.repository = repository;
+            this.mapper = mapper;
         }
 
         public async Task<IEnumerable<UserInfo>> GetAsync()
         {
-            //will be mapped later
-            return (await repository.GetAsync()).Select(u => new UserInfo(){ Id = u.Id, Login = u.Login, Name = u.Name });
+            return (await repository.GetAsync()).Select(u => mapper.Map<UserInfo>(u));
         }
 
         public async Task<UserInfo> GetAsync(int id)
@@ -29,10 +31,10 @@ namespace ABAC.DAL.Services
             var user = await repository.GetByIdAsync(id);
             if (user == null)
             {
-                // throw new NotFoundException
+                throw new NotFoundException();
             }
-        // will be mapped later
-        return new UserInfo { Id = user.Id, Name = user.Name, Login = user.Login };
+
+            return mapper.Map<UserInfo>(user);
         }
 
         public async Task<UserInfo> GetAsync(string login)
@@ -40,18 +42,21 @@ namespace ABAC.DAL.Services
             var user = await repository.GetByLoginAsync(login);
             if (user == null)
             {
-                // throw new NotFoundException
+                throw new NotFoundException();
             }
-            // will be mapped later
-            return new UserInfo { Id = user.Id, Login = user.Login, Name = user.Name };
+            
+            return mapper.Map<UserInfo>(user);
         }
 
         public async Task<UserCredentials> GetCredentialsAsync(string login)
         {
             var credentials = await repository.GetByLoginAsync(login);
+            if (credentials == null)
+            {
+                throw new NotFoundException();
+            }
 
-            // will be mapped later
-            return credentials != null ? new UserCredentials(){ Login = credentials.Login, Password = credentials.Password } : null;
+            return mapper.Map<UserCredentials>(credentials);
         }
 
         public async Task CreateAsync(UserInfo user, UserCredentials credentials)
@@ -65,7 +70,7 @@ namespace ABAC.DAL.Services
             var user = await repository.GetByIdAsync(model.Id);
             if (user == null)
             {
-                // throw new NotFoundException
+                throw new NotFoundException();
             }
 
             user.Name = model.Name;
@@ -77,7 +82,7 @@ namespace ABAC.DAL.Services
             var user = await repository.GetByIdAsync(id);
             if (user == null)
             {
-                // throw new NotFoundException
+                throw new NotFoundException();
             }
 
             await repository.DeleteByIdAsync(id);
@@ -88,7 +93,7 @@ namespace ABAC.DAL.Services
             var user = await repository.GetByIdAsync(id);
             if (user == null)
             {
-                // throw new NotFoundException
+                throw new NotFoundException();
             }
 
             return user.Attributes;
@@ -99,7 +104,7 @@ namespace ABAC.DAL.Services
             var user = await repository.GetByIdAsync(id);
             if (user == null)
             {
-                // throw new NotFoundException
+                throw new NotFoundException();
             }
 
             user.Attributes = user.Attributes.Concat(attributes).Distinct(new AttributeEqualityComparer());
@@ -111,7 +116,7 @@ namespace ABAC.DAL.Services
             var user = await repository.GetByIdAsync(id);
             if (user == null)
             {
-                // throw new NotFoundException
+                throw new NotFoundException();
             }
 
             user.Attributes = user.Attributes.Where(a => !new AttributeEqualityComparer().Equals(a, attribute));
