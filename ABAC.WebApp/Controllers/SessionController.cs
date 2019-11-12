@@ -3,6 +3,7 @@ using ABAC.DAL.Services.Contracts;
 using ABAC.DAL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace ABAC.WebApp.Controllers
 {
@@ -27,7 +28,6 @@ namespace ABAC.WebApp.Controllers
             catch (NotFoundException)
             {
                 await service.CreateAsync(info, credentials);
-                // create session
                 return;
             }
 
@@ -35,22 +35,28 @@ namespace ABAC.WebApp.Controllers
         }
 
         [HttpPost("login")]
-        public async Task LogIn([FromForm] UserCredentials user)
+        public async Task LogIn([FromForm] UserCredentials credentials)
         {
-            var expected = await service.GetCredentialsAsync(user.Login);
-            if (expected.Password == user.Password)
+            var expected = await service.GetCredentialsAsync(credentials.Login);
+            if (expected.Password != credentials.Password)
             {
-                // create session
-                return;
+                throw new InvalidCredentialsException();
             }
 
-            throw new InvalidCredentialsException();
+            HttpContext.Session.SetString("login", credentials.Login);
+            var info = await service.GetAsync(credentials.Login);
+            HttpContext.Session.SetInt32("id", info.Id);
+            var attributes = await service.GetAttributesAsync(info.Id);
+            foreach (var attribute in attributes)
+            {
+                HttpContext.Session.SetString(attribute.Name, attribute.Value);
+            }
         }
 
         [HttpGet("logout")]
-        public async Task LogOut()
+        public void LogOut()
         {
-            // terminate session
+            HttpContext.Session.Clear();
         }
     }
 }
