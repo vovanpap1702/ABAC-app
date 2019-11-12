@@ -24,7 +24,7 @@ namespace ABAC.WebApp.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ResourceInfo> GetResourceAsync(int id)
+        public async Task<ResourceInfo> GetResourceAsync([FromRoute] int id)
         {
             return await service.GetAsync(id);
         }
@@ -36,7 +36,7 @@ namespace ABAC.WebApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task DeleteResourceAsync(int id)
+        public async Task DeleteResourceAsync([FromRoute] int id)
         {
             await service.DeleteAsync(id);
         }

@@ -22,37 +22,37 @@ namespace ABAC.WebApp.Controllers
         }
 
         [HttpGet("user/{id}")]
-        public async Task<IEnumerable<Attribute>> GetUserAttributesAsync(int id)
+        public async Task<IEnumerable<Attribute>> GetUserAttributesAsync([FromRoute] int id)
         {
             return await userService.GetAttributesAsync(id);
         }
 
         [HttpPost("user/{id}")]
-        public async Task UpdateUserAttributesAsync(int id, [FromBody] IEnumerable<Attribute> attributes)
+        public async Task UpdateUserAttributesAsync([FromRoute] int id, [FromBody] IEnumerable<Attribute> attributes)
         {
             await userService.AddAttributesAsync(id, attributes);
         }
 
         [HttpDelete("user/{id}")]
-        public async Task DeleteUserAttributeAsync(int id, [FromBody] Attribute attribute)
+        public async Task DeleteUserAttributeAsync([FromRoute] int id, [FromBody] Attribute attribute)
         {
             await userService.DeleteAttributeAsync(id, attribute);
         }
 
         [HttpGet("resource/{id}")]
-        public async Task<IEnumerable<Attribute>> GetResourceAttributesAsync(int id)
+        public async Task<IEnumerable<Attribute>> GetResourceAttributesAsync([FromRoute] int id)
         {
             return await resourceService.GetAttributesAsync(id);
         }
 
         [HttpPost("resource/{id}")]
-        public async Task UpdateResourceAsync(int id, [FromBody] IEnumerable<Attribute> attributes)
+        public async Task UpdateResourceAsync([FromRoute] int id, [FromBody] IEnumerable<Attribute> attributes)
         {
             await resourceService.AddAttributesAsync(id, attributes);
         }
 
         [HttpDelete("user/{id}")]
-        public async Task DeleteResourceAttributeAsync(int id, [FromBody] Attribute attribute)
+        public async Task DeleteResourceAttributeAsync([FromRoute] int id, [FromBody] Attribute attribute)
         {
             await resourceService.DeleteAttributeAsync(id, attribute);
         }
