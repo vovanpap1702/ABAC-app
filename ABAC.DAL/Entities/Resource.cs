@@ -10,6 +10,6 @@ namespace ABAC.DAL.Entities
 
         public string Value { get; set; }
 
-        public IEnumerable<Attribute> Attributes { get; set; }
+        public IDictionary<string, string> Attributes { get; set; }
     }
 }

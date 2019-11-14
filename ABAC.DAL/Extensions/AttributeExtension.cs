@@ -3,7 +3,6 @@ using ABAC.DAL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Attribute = ABAC.DAL.Entities.Attribute;
 
 namespace ABAC.DAL.Extensions
 {
@@ -46,16 +45,10 @@ namespace ABAC.DAL.Extensions
             return resource;
         }
 
-        private static IEnumerable<Attribute> DefaultUserAttributes
-            => new List<Attribute> { UserRole };
+        private static IDictionary<string, string> DefaultUserAttributes
+            => new Dictionary<string, string> {{"User.Role", "User"}};
 
-        private static IEnumerable<Attribute> DefaultResourceAttributes
-            => new List<Attribute> { ResourceCreatedAt };
-
-        private static Attribute UserRole
-            => new Attribute { Name = "Role", Value = "User" };
-
-        private static Attribute ResourceCreatedAt
-            => new Attribute { Name = "CreatedAt", Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture) };
+        private static IDictionary<string, string> DefaultResourceAttributes
+            => new Dictionary<string, string> {{"Resource.CreatedAt", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}};
     }
 }

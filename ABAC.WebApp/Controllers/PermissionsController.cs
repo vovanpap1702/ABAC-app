@@ -34,7 +34,7 @@ namespace ABAC.WebApp.Controllers
         }
 
         [HttpDelete("user/{id}")]
-        public async Task DeleteUserAttributeAsync([FromRoute] int id, [FromBody] Attribute attribute)
+        public async Task DeleteUserAttributeAsync([FromRoute] int id, [FromBody] string attribute)
         {
             await userService.DeleteAttributeAsync(id, attribute);
         }
@@ -52,7 +52,7 @@ namespace ABAC.WebApp.Controllers
         }
 
         [HttpDelete("user/{id}")]
-        public async Task DeleteResourceAttributeAsync([FromRoute] int id, [FromBody] Attribute attribute)
+        public async Task DeleteResourceAttributeAsync([FromRoute] int id, [FromBody] string attribute)
         {
             await resourceService.DeleteAttributeAsync(id, attribute);
         }

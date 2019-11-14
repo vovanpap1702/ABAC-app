@@ -66,7 +66,7 @@ namespace ABAC.DAL.Services
                 throw new NotFoundException();
             }
 
-            return resource.Attributes;
+            return resource.Attributes.Select(kvp => mapper.Map<Attribute>(kvp));
         }
 
         public async Task AddAttributesAsync(int id, IEnumerable<Attribute> attributes)
@@ -77,11 +77,15 @@ namespace ABAC.DAL.Services
                 throw new NotFoundException();
             }
 
-            resource.Attributes = resource.Attributes.Concat(attributes).Distinct(new AttributeEqualityComparer());
+            foreach (var attribute in attributes)
+            {
+                resource.Attributes[attribute.Name] = attribute.Value;
+            }
+
             await repository.CreateOrUpdateAsync(resource);
         }
 
-        public async Task DeleteAttributeAsync(int id, Attribute attribute)
+        public async Task DeleteAttributeAsync(int id, string attributeName)
         {
             var resource = await repository.GetByIdAsync(id);
             if (resource == null)
@@ -89,7 +93,7 @@ namespace ABAC.DAL.Services
                 throw new NotFoundException();
             }
 
-            resource.Attributes = resource.Attributes.Where(a => !new AttributeEqualityComparer().Equals(a, attribute));
+            resource.Attributes.Remove(attributeName);
             await repository.CreateOrUpdateAsync(resource);
         }
     }

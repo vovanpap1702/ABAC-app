@@ -18,6 +18,6 @@ namespace ABAC.DAL.Services.Contracts
 
         Task AddAttributesAsync(int id, IEnumerable<Attribute> attributes);
 
-        Task DeleteAttributeAsync(int id, Attribute attribute);
+        Task DeleteAttributeAsync(int id, string attributeName);
     }
 }
