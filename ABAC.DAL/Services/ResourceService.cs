@@ -1,9 +1,9 @@
 ﻿using ABAC.DAL.Entities;
 using ABAC.DAL.Exceptions;
 using ABAC.DAL.Extensions;
-using ABAC.DAL.ViewModels;
 using ABAC.DAL.Repositories.Contracts;
 using ABAC.DAL.Services.Contracts;
+using ABAC.DAL.ViewModels;
 using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace ABAC.DAL.Services
             {
                 throw new NotFoundException();
             }
-            
+
             return mapper.Map<ResourceInfo>(resource);
         }
 

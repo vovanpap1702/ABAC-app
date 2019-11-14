@@ -1,4 +1,5 @@
 using ABAC.DAL.Entities;
+using ABAC.DAL.Exceptions;
 using ABAC.DAL.Repositories;
 using ABAC.DAL.Repositories.Contracts;
 using ABAC.DAL.Services;
@@ -7,7 +8,9 @@ using ABAC.DAL.ViewModels;
 using ABAC.WebApp.Configuration;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
@@ -85,6 +88,44 @@ namespace ABAC.WebApp
                 if (env.IsDevelopment())
                 {
                     spa.UseAngularCliServer(npmScript: "start");
+                }
+                else
+                {
+                    app.UseExceptionHandler(errApp =>
+                    {
+                        errApp.Run(async context =>
+                        {
+                            var features = context.Features.Get<IExceptionHandlerPathFeature>();
+                            var exception = features.Error;
+                            switch (exception)
+                            {
+                                case NotFoundException e:
+                                    context.Response.StatusCode = 404;
+                                    break;
+                                case InvalidCredentialsException e:
+                                    context.Response.StatusCode = 401;
+                                    break;
+                                case AlreadyExistsException e:
+                                    context.Response.StatusCode = 400;
+                                    break;
+                                default:
+                                    context.Response.StatusCode = 500;
+                                    break;
+                            }
+
+                            context.Response.ContentType = "application/json";
+                            var errorMessage = context.Response.StatusCode == 500
+                                           ? "Internal server error"
+                                           : exception.Message;
+
+                            var responseText = $@"{{
+                                                ""errorCode"": {context.Response.StatusCode},
+                                                ""errorMessage"": ""{errorMessage}""
+                                            }}";
+
+                            await context.Response.WriteAsync(responseText);
+                        });
+                    });
                 }
             });
         }
